@@ -35,10 +35,10 @@ def geraAP_ML(valx, valy):
     valores_ML = []
 
     for ele in range(len(valy)):
-        soma_AP0 = soma_AP0 + abs(valx[ele])
-        soma_ML0 = soma_ML0 + abs(valy[ele])
+        soma_AP0 = soma_AP0 + valx[ele]
+        soma_ML0 = soma_ML0 + valy[ele]
 
-    AP_barra = soma_AP0 / len(valy)
+    AP_barra = soma_AP0 / len(valx)
     ML_barra = soma_ML0 / len(valy)
 
     for i in range(len(valy)):
@@ -81,15 +81,7 @@ def totexParcial(APouML):
     return Totexparcial
 
 def valorAbsoluto(minimo, maximo):
-    if abs(minimo)> abs(maximo):
+    if abs(minimo) > abs(maximo):
         return abs(minimo)
     else:
         return abs(maximo)
-
-def retangulo(x_absoluto, y_absoluto):
-    rect= []
-    rect.append(- x_absoluto)
-    rect.append(-y_absoluto)
-    rect.append(2*x_absoluto)
-    rect.append(2*y_absoluto)
-    return rect

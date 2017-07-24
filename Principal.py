@@ -18,9 +18,10 @@ class MyWindow(Gtk.Window):
 
         #Janela
         Gtk.Window.__init__(self, title="Testando")
-        self.set_size_request(400, 400)
+        self.set_resizable(False)
+        self.set_size_request(600, 600)
         self.set_position(Gtk.WindowPosition.CENTER)
-        #self.set_resizable(True)
+
         self.set_border_width(10)
 
         principal = Gtk.Box(spacing=10)
@@ -129,25 +130,27 @@ class MyWindow(Gtk.Window):
         self.axis.set_ylabel('ML')
         self.axis.set_xlabel('AP')
         self.canvas = FigureCanvas(self.fig)
-        self.canvas.set_size_request(400, 400)
+        self.canvas.set_size_request(500, 500)
+
+
 
         self.page1 = Gtk.Box()
         self.page1.set_border_width(10)
         self.page1.add(self.canvas)
-        self.notebook.append_page(self.page1, Gtk.Label('Gráfico Gerado'))
+        self.notebook.append_page(self.page1, Gtk.Label('Gráfico do CoP'))
 
-
+        ##aqui fica a segunda janela do notebook
         self.fig2 = plt.figure()
-        self.axis2 =self.fig2.add_subplot(111)
+        self.axis2 = self.fig2.add_subplot(111)
         self.axis2.set_ylabel('ML')
         self.axis2.set_xlabel('AP')
         self.canvas2 = FigureCanvas(self.fig2)
-        self.canvas2.set_size_request(400, 400)
+        self.canvas2.set_size_request(500, 500)
 
         self.page2 = Gtk.Box()
         self.page2.set_border_width(10)
         self.page2.add(self.canvas2)
-        self.notebook.append_page(self.page2, Gtk.Label('Gráfico Processador'))
+        self.notebook.append_page(self.page2, Gtk.Label('Gráfico na frequência'))
 
         #criando os botoes
         hbox_botoes = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
@@ -155,9 +158,10 @@ class MyWindow(Gtk.Window):
 
         self.button1 = Gtk.Button(label="Capturar")
         self.button1.connect("clicked", self.on_button1_clicked)
+
         self.button2 = Gtk.Button(label="Processar")
         self.button2.connect("clicked", self.on_button2_clicked)
-
+        #self.set_resizable(True
         #colocando os botoes nas boxes
         hbox_botoes.pack_start(self.button1, True, True,0)
         hbox_botoes.pack_start(self.button2, True, True, 0)
@@ -173,11 +177,21 @@ class MyWindow(Gtk.Window):
 
     def on_button1_clicked(self, widget):
         global APs, MLs
-        APs, MLs = calc.geraNumeroAleatorio(-3, 7, -4, 6, 25)
+        APs, MLs = calc.geraNumeroAleatorio(-3, 7, -4, 6, 40)
+
+        max_absoluto_AP = calc.valorAbsoluto(min(APs), max(APs))
+        max_absoluto_ML = calc.valorAbsoluto(min(MLs), max(MLs))
+
+        print('max_absoluto_AP:',max_absoluto_AP,'max_absoluto_ML:',max_absoluto_ML)
+
         self.axis.clear()
         self.axis.set_ylabel('ML')
         self.axis.set_xlabel('AP')
-        self.axis.plot(APs, MLs,'-',color='r')
+
+        self.axis.set_xlim(-max_absoluto_AP, max_absoluto_AP)
+        self.axis.set_ylim(-max_absoluto_ML, max_absoluto_ML)
+
+        self.axis.plot(APs, MLs,'.-',color='r')
         self.canvas.draw()
 
 
@@ -185,8 +199,7 @@ class MyWindow(Gtk.Window):
         global APs, MLs
         APs, MLs = calc.geraAP_ML(APs, MLs)
 
-        max_absoluto_AP = calc.valorAbsoluto(max(APs), min(APs))
-        max_absoluto_ML = calc.valorAbsoluto(max(MLs), min(MLs))
+
 
         dis_resultante_total = calc.distanciaResultante(APs, MLs)
         dis_resultante_AP = calc.distanciaResultanteParcial(APs)
@@ -202,9 +215,9 @@ class MyWindow(Gtk.Window):
         totex_AP = calc.totexParcial(APs)
         totex_ML = calc.totexParcial(MLs)
 
-        mvelo_total = calc.mVelo(totex_total, 60)
-        mvelo_AP = calc.mVelo(totex_AP, 60)
-        mvelo_ML =  calc.mVelo(totex_ML, 60)
+        mvelo_total = calc.mVelo(totex_total, 20)
+        mvelo_AP = calc.mVelo(totex_AP, 20)
+        mvelo_ML =  calc.mVelo(totex_ML, 20)
 
         self.entry_Mdist.set_text(str(dis_media))
 
@@ -220,17 +233,21 @@ class MyWindow(Gtk.Window):
         self.entry_MVELO_AP.set_text(str(mvelo_AP))
         self.entry_MVELO_ML.set_text(str(mvelo_ML))
 
-        #retangulo = calc.retangulo(max_absoluto_AP, max_absoluto_ML)
-        #print(retangulo)
-        self.axis2.clear()
-        #self.fig2.add_axes(retangulo)
-        self.axis2.plot(APs, MLs,'-',color='g')
+        max_absoluto_AP = calc.valorAbsoluto(min(APs), max(APs))
+        max_absoluto_ML = calc.valorAbsoluto(min(MLs), max(MLs))
 
-        #self.axis2.axhline(xmin= -max_absoluto_AP, xmax=max_absoluto_AP)  #cria uma linha horizontal em y=0
-        #self.axis2.axvline(ymax= max_absoluto_ML, ymin=-max_absoluto_ML)  #cria uma linha vertical em x=0
-        self.axis2.set_ylabel('ML')
-        self.axis2.set_xlabel('AP')
-        self.canvas2.draw()
+        print('max_absoluto_AP:', max_absoluto_AP, 'max_absoluto_ML:', max_absoluto_ML)
+        self.axis.clear()
+
+        self.axis.set_xlim(-max_absoluto_AP, max_absoluto_AP)
+        self.axis.set_ylim(-max_absoluto_ML, max_absoluto_ML)
+
+        self.axis.plot(APs, MLs,'.-',color='g')
+
+        self.axis.set_ylabel('ML')
+        self.axis.set_xlabel('AP')
+        self.canvas.draw()
+
 
 win = MyWindow()
 win.connect("delete-event", Gtk.main_quit)
