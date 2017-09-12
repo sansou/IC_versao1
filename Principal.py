@@ -177,7 +177,50 @@ class MyWindow(Gtk.Window):
 
     def on_button1_clicked(self, widget):
         global APs, MLs
-        APs, MLs = calc.geraNumeroAleatorio(-3, 7, -4, 6, 40)
+    
+        pos_AP = []
+        pos_ML = []
+        
+        AP_aux = []
+        ML_aux = []
+
+        ref_arquivo_x_diferente = open("/home/thales/wiibalance/cwiid/python/xdiferente.txt", "r")
+        ref_arquivo_y_diferente = open("/home/thales/wiibalance/cwiid/python/ydiferente.txt", "r")
+
+        for linhax in ref_arquivo_x_diferente:
+            AP_aux.append(ref_arquivo_x_diferente.readline(13))
+
+        for linhay in ref_arquivo_y_diferente:
+            ML_aux.append(ref_arquivo_y_diferente.readline(13))
+
+        ref_arquivo_x_diferente.close()
+        ref_arquivo_y_diferente.close()
+
+        for i in range(len(AP_aux)):
+            e = AP_aux[i]
+
+            try:
+                APs.append(float(e))
+            except:
+                #print('posicao de x que nao conseguiu pegar o valor real:', i)
+                pos_AP.append(i)
+                
+        for j in range(len(ML_aux)):
+            e = ML_aux[j]
+
+            try:
+                MLs.append(float(e))
+            except:
+                #print('posicao de y que nao conseguiu pegar o valor real:', j)
+                pos_ML.append(j)
+                
+        #APs, MLs = calc.geraNumeroAleatorio(-3, 7, -4, 6, 40)
+
+        if calc.diferentes(APs,MLs):
+            if len(APs) > len(MLs):
+                APs = calc.delEleAP(APs, pos_ML)
+            else:
+                MLs =calc.delEleML(MLs, pos_AP)
 
         max_absoluto_AP = calc.valorAbsoluto(min(APs), max(APs))
         max_absoluto_ML = calc.valorAbsoluto(min(MLs), max(MLs))
@@ -190,16 +233,13 @@ class MyWindow(Gtk.Window):
 
         self.axis.set_xlim(-max_absoluto_AP, max_absoluto_AP)
         self.axis.set_ylim(-max_absoluto_ML, max_absoluto_ML)
-
-        self.axis.plot(APs, MLs,'.-',color='r')
+        self.axis.plot(APs, MLs,'-',color='r')
         self.canvas.draw()
 
 
     def on_button2_clicked(self, widget):
         global APs, MLs
         APs, MLs = calc.geraAP_ML(APs, MLs)
-
-
 
         dis_resultante_total = calc.distanciaResultante(APs, MLs)
         dis_resultante_AP = calc.distanciaResultanteParcial(APs)

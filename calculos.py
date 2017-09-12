@@ -85,3 +85,18 @@ def valorAbsoluto(minimo, maximo):
         return abs(minimo)
     else:
         return abs(maximo)
+
+def diferentes(APs , Mls):
+    if len(APs)!= len(Mls):
+        return True
+    return False
+
+def delEleAP(AP, pos):
+    for i in range(len(pos)):
+        del AP[pos[i]]
+    return AP
+    
+def delEleML(ML, pos):
+    for i in range(len(pos)):
+        del ML[pos[i]]
+    return ML
